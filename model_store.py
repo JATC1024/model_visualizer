@@ -3,8 +3,8 @@
 #	- Select model
 #	- Control selected model
 
-from .regression import logicstic_regression
-from .svm import support_vector_machine
+from .models.regression import logicstic_regression
+from .models.svm import support_vector_machine
 
 class model_store:
 
@@ -26,7 +26,7 @@ class model_store:
 				self.reset()
 				return True
 		return False
-	
+
 	def add_one_data(self, element):
 		self.data.append(element)
 
