@@ -7,18 +7,20 @@ from .regression import logicstic_regression
 from .svm import support_vector_machine
 
 class model_store:
-	current = None
-	data = []
-	lr = logicstic_regression()
-	svm = support_vector_machine()
-	model_list = [lr, svm]
+
+	def __init__(self):
+		self.current = None
+		self.data = []
+		lr = logicstic_regression()
+		svm = support_vector_machine()
+		self.model_list = [lr, svm]
 
 	def reset(self):
 		self.current.reset()
 		self.data = []
 
 	def recognize(tag):
-		for model in model_store.model_list:
+		for model in self.model_list:
 			if model.recognize(tag):
 				self.current = model
 				self.reset()
