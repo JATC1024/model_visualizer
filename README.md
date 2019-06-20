@@ -1,4 +1,5 @@
-This is a readme
+# Introduction
+This is a tool to visualize some simple machine learning models.
 
 
 # Install requirements
