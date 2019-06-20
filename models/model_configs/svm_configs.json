@@ -1,9 +1,10 @@
 {
-	"names":[
+	"name" : "Support Vector Machines",
+	"tags":[
 		"SVM",
 		"svm",
 		"Support-vector Machines",
-		"Suport Vector Machines"
+		"Support Vector Machines"
 	],
 	"params":{
 		"regularization_rate":{
