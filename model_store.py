@@ -29,6 +29,9 @@ class model_store:
 	def add_one_data(self, element):
 		self.data.append(element)
 
+	def add_data(self, array)
+		self.data = array
+
 	def feed_data(self):
 		self.current.feed_data(data)
 

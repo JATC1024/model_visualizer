@@ -6,10 +6,13 @@ class cross_preset(root_preset):
 	
 	def __init__(self):
 		root_preset.__init__()
-		self.name = 'Cross preset'
+		data = self.json_data()
+		self.name = data['name']
 	
-	def recognize(self, tag):
-		return (tag == 'Cross') or (tag == self.name)
+	def json_data(self):
+		dir = os.path.join(os.path.dirname(__file__), 'data_configs/cross.json')
+		with open(dir) as f:
+			return json.load(f)
 
 	def classify(self, x1, x2):
 		if x1 * x2 >= 0:

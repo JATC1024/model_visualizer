@@ -13,10 +13,10 @@ def choose_model(model):
 	
 def configure_model(model):
 	args = model.get_arguments()
-	values = []
+	values = {}
 	for arg in args
 		val = input('%s (%s): ' %(arg[0], arg[1]))
-		values.append(val)
+		values[arg[0]] = val
 	model.set_arguments(values)
 
 def feed_data(model):

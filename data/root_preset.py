@@ -5,17 +5,24 @@ import numpy
 class root_preset:
 	
 	def __init__(self):
-		self.name = 'Root Preset'
-		self.noise = 0.1
+		data = self.json_data()
+		self.name = data['name']
+		self.noise = data['noise']
 		self.data = []
-		self.size = 100
-		self.rang = (-1, 1)
+		self.size = data['size']
+		self.rang = data['rang']
+	
+	def json_data(self):
+		dir = os.path.join(os.path.dirname(__file__), 'data_configs/root.json')
+		with open(dir) as f:
+			return json.load(f)
 
 	def be_noise(self)
 		return numpy.random.uniform(0,1) <= self.noise
 
 	def recognize(self, tag):
-		pass
+		data = self.json_data()
+		return tag in data['tag']
 	
 	def classify(self, x1, x2):
 		pass
