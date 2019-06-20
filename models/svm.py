@@ -1,5 +1,7 @@
 # Support vector machine model
 from .root_model import root_model
+import json
+import os
 
 class support_vector_machine(root_model):
 
@@ -7,4 +9,19 @@ class support_vector_machine(root_model):
 		self.name = 'Support Vector Machine'
 
 	def recognize(self, tag):
-		return (tag == 'SVM') or (tag == self.name)
+		dir = os.path.join(os.path.dirname(__file__),
+				"model_parameters/svm_params.json")
+		with open(dir) as f:
+			data = json.load(f)
+			if tag in data['names']:
+				return True
+			else:
+				return False
+
+
+	def get_arguments(self):
+		dir = os.path.join(os.path.dirname(__file__),
+				"model_parameters/svm_params.json")
+		with open(dir) as f:
+			data = json.load(f)
+			return data['params']
