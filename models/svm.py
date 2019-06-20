@@ -6,22 +6,30 @@ import os
 class support_vector_machine(root_model):
 
 	def __init__(self):
-		self.name = 'Support Vector Machine'
+		super(support_vector_machine, self).__init__()
+		self.configs = "model_configs/svm_configs.json"
+		self.name, self.params = self.initialize(self.configs)
 
 	def recognize(self, tag):
-		dir = os.path.join(os.path.dirname(__file__),
-				"model_parameters/svm_params.json")
+		dir = os.path.join(os.path.dirname(__file__), self.configs)
 		with open(dir) as f:
 			data = json.load(f)
-			if tag in data['names']:
+			if tag in data['tags']:
 				return True
 			else:
 				return False
 
 
 	def get_arguments(self):
-		dir = os.path.join(os.path.dirname(__file__),
-				"model_parameters/svm_params.json")
+		dir = os.path.join(os.path.dirname(__file__), self.configs)
 		with open(dir) as f:
 			data = json.load(f)
-			return data['params']
+			params = data['params']
+			print("haha")
+			return [(key, params[key]["type"]) for key in params]
+
+	def set_arguments(self, dict):
+		self.params = dict
+
+	def reset(self):
+		self.params = self.initialize(self.configs)
