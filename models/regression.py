@@ -1,7 +1,7 @@
 # Logicstic Regression model
 from .root_model import root_model
 
-class logicstic_regression(root_model):
+class logistic_regression(root_model):
 
 	def __init__(self):
 		self.name = 'Logicstic Regression'

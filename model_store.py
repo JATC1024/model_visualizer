@@ -3,15 +3,14 @@
 #	- Select model
 #	- Control selected model
 
-from .models.regression import logicstic_regression
-from .models.svm import support_vector_machine
+from models import support_vector_machine, logistic_regression
 
 class model_store:
 
 	def __init__(self):
 		self.current = None
 		self.data = []
-		lr = logicstic_regression()
+		lr = logistic_regression()
 		svm = support_vector_machine()
 		self.model_list = [lr, svm]
 
@@ -19,7 +18,7 @@ class model_store:
 		self.current.reset()
 		self.data = []
 
-	def recognize(tag):
+	def recognize(self, tag):
 		for model in self.model_list:
 			if model.recognize(tag):
 				self.current = model
