@@ -1,1 +1,2 @@
-from .model_store import model_store
+from .regression import logistic_regression
+from .svm import support_vector_machine
