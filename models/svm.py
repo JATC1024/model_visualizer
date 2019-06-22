@@ -4,14 +4,16 @@ import json
 import os
 
 class support_vector_machine(root_model):
+	__configs = "model_configs/svm_configs.json"
 
 	def __init__(self):
 		super(support_vector_machine, self).__init__()
-		self.configs = "model_configs/svm_configs.json"
-		self.name, self.params = self.initialize(self.configs)
+		self.name, self.params = self.initialize \
+					(support_vector_machine.__configs)
 
 	def recognize(self, tag):
-		dir = os.path.join(os.path.dirname(__file__), self.configs)
+		dir = os.path.join(os.path.dirname(__file__), \
+			support_vector_machine.__configs)
 		with open(dir) as f:
 			data = json.load(f)
 			if tag in data['tags']:
@@ -21,7 +23,8 @@ class support_vector_machine(root_model):
 
 
 	def get_arguments(self):
-		dir = os.path.join(os.path.dirname(__file__), self.configs)
+		dir = os.path.join(os.path.dirname(__file__), \
+				support_vector_machine.__configs)
 		with open(dir) as f:
 			data = json.load(f)
 			params = data['params']
@@ -32,4 +35,4 @@ class support_vector_machine(root_model):
 		self.params = dict
 
 	def reset(self):
-		self.params = self.initialize(self.configs)
+		self.params = self.initialize(support_vector_machine.__configs)
