@@ -2,37 +2,25 @@
 from .root_model import root_model
 import json
 import os
+import numpy as np
 
 class support_vector_machine(root_model):
-	__configs = "model_configs/svm_configs.json"
+	_configs = "model_configs/svm_configs.json"
 
 	def __init__(self):
+		""" Default constructor.
+		Creates dummy attributes for the class """
 		super(support_vector_machine, self).__init__()
-		self.name, self.params = self.initialize \
-					(support_vector_machine.__configs)
+		self.weights = None
+		self._initialize(support_vector_machine._configs)
 
-	def recognize(self, tag):
-		dir = os.path.join(os.path.dirname(__file__), \
-			support_vector_machine.__configs)
-		with open(dir) as f:
-			data = json.load(f)
-			if tag in data['tags']:
-				return True
-			else:
-				return False
+	def _initialize(self, configs):
+		""" Initializes the model with a given config file """
+		super(support_vector_machine, self)._initialize(configs)
+		self.weights = np.random.uniform(-1, 1, 3)
 
+	def _get_config_file_name(self):
+		return support_vector_machine._configs
 
-	def get_arguments(self):
-		dir = os.path.join(os.path.dirname(__file__), \
-				support_vector_machine.__configs)
-		with open(dir) as f:
-			data = json.load(f)
-			params = data['params']
-			print("haha")
-			return [(key, params[key]["type"]) for key in params]
-
-	def set_arguments(self, dict):
-		self.params = dict
-
-	def reset(self):
-		self.params = self.initialize(support_vector_machine.__configs)
+	def clone(self):
+		return support_vector_machine()
