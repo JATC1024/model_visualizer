@@ -1,2 +1,1 @@
-from .regression import logistic_regression
-from .svm import support_vector_machine
+from .model_prototype import model_prototype
