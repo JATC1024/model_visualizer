@@ -2,10 +2,52 @@
 # Show information and read input from user
 # Draw output to user
 
-#from model_store import model_store
+from model_manager import model_manager
 import tkinter as tk
 from tkinter import ttk
 
+class ui_manager:
+	def __init__(self):
+		# Model manager
+		self.models = model_manager()
+
+		# Main form
+		self.form = tk.Tk()
+		self.form.title("Model visualizer")
+		self.form.geometry("500x280")
+		
+		# Create tabs
+		self.tab_parent = ttk.Notebook(self.form)
+		self.tab_model = ttk.Frame(self.tab_parent)
+		self.tab_config = ttk.Frame(self.tab_parent)
+		self.tab_data = ttk.Frame(self.tab_parent)
+		self.tab_visual = ttk.Frame(self.tab_parent)
+
+		# Assign tabs to parents
+		self.tab_parent.add(self.tab_model, text = "Model")
+		self.tab_parent.add(self.tab_config, text = "Configure")
+		self.tab_parent.add(self.tab_data, text = "Data")
+		self.tab_parent.add(self.tab_visual, text = "Visualization")
+
+		# Widgets for tab_model
+		self.title_tab_model = tk.Label(self.tab_model, text = "Choose a model")
+		model_list = self.models.list()
+		self.button_tab_model = []
+		for md in model_list:
+			btn = tk.Button(self.tab_model, text = md)
+			self.button_tab_model.append(btn)
+
+		# Add Widgets to tab_model
+		self.title_tab_model.grid(row=0,column=0, padx=15, pady=15, sticky = 'W')
+		r = 0
+		for btn in self.button_tab_model:
+			r = r + 1
+			btn.grid(row=r, column=0, padx=15, pady=15, sticky = 'W')
+
+		# Show
+		self.tab_parent.pack(expand=1, fill="both")
+		self.form.mainloop()
+		
 '''
 def choose_model(model):
 	while True:
@@ -36,28 +78,4 @@ def control_model(model):
 '''
 
 if __name__ == "__main__":
-	# Main form
-	form = tk.Tk()
-	form.title("Model visualizer")
-	form.geometry("500x280")
-	
-	# Create tabs
-	tab_parent = ttk.Notebook(form)
-	tab_model = ttk.Frame(tab_parent)
-	tab_config = ttk.Frame(tab_parent)
-	tab_data = ttk.Frame(tab_parent)
-	tab_visual = ttk.Frame(tab_parent)
-
-	# Assign tabs to parents
-	tab_parent.add(tab_model, text = "Model")
-	tab_parent.add(tab_config, text = "Configure")
-	tab_parent.add(tab_data, text = "Data")
-	tab_parent.add(tab_visual, text = "Visualization")
-
-	# Widgets for tab_model
-	title_tab_model = tk.Label(tab_model, text = "Choose a model")
-	
-
-	# Show
-	tab_parent.pack(expand=1, fill="both")
-	form.mainloop()
+	manager = ui_manager()
