@@ -1,6 +1,5 @@
-from model_store import model_store
+import Tkinter
 
-if __name__ == '__main__':
-	ms = model_store()
-	ms.recognize('SVM')
-	print(ms.current.get_arguments())
+top = Tkinter.Tk()
+
+top.mainloop()
