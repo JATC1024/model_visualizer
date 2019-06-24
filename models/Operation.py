@@ -1,3 +1,4 @@
+import numpy as np
 from .computational_graph import Graph
 
 class Operation:
@@ -27,3 +28,18 @@ class Add(Operation):
 	def compute(self, x, y):
 		""" Computes the output """
 		return x + y
+
+class Sigmoid(Operation):
+	""" Represents the sigmoid function """
+	def __init__(self, x):
+		super().__init__([x])
+
+	def compute(self, val):
+		return 1.0 / (1.0 + np.exp(-val))
+
+class Dot(Operation):
+	def __init__(self, x, y):
+		super().__init__([x, y])
+
+	def compute(self, x, y):
+		return np.sum(x * y)

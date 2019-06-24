@@ -11,9 +11,10 @@ class Session:
 			if type(node) == Variables:
 				node.output = node.value
 			elif type(node) == Placeholder:
-				node.output = feed_dict[node]
+				node.output = feed_dict[node.name]
 			else:
-				node.inputs = [input_node.output for input_node in node.input_nodes]
+				node.inputs = [input_node.output for
+						input_node in node.input_nodes]
 				node.output = node.compute(*node.inputs)
 
 			if type(node.output) == list:
