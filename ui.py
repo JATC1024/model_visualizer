@@ -2,11 +2,13 @@
 # Show information and read input from user
 # Draw output to user
 
+from functools import partial
 from model_manager import model_manager
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 class ui_manager:
+
 	def __init__(self):
 		# Model manager
 		self.models = model_manager()
@@ -34,7 +36,7 @@ class ui_manager:
 		model_list = self.models.list()
 		self.button_tab_model = []
 		for md in model_list:
-			btn = tk.Button(self.tab_model, text = md)
+			btn = tk.Button(self.tab_model, text = md, command = partial(self.choose_model, md))
 			self.button_tab_model.append(btn)
 
 		# Add Widgets to tab_model
@@ -44,25 +46,95 @@ class ui_manager:
 			r = r + 1
 			btn.grid(row=r, column=0, padx=15, pady=15, sticky = 'W')
 
+		# Disable other tabs
+		self.tab_parent.tab(1, state="disabled")
+		self.tab_parent.tab(2, state="disabled")
+		self.tab_parent.tab(3, state="disabled")
+
+		# Events
+		self.tab_parent.bind("<<NotebookTabChanged>>", self.on_tab_selected)
+
 		# Show
 		self.tab_parent.pack(expand=1, fill="both")
 		self.form.mainloop()
+
+	def on_tab_selected(self, event):
+		id = event.widget.index("current")
+		if id == 1:
+			self.enable_configure()
+		elif id == 2:
+			self.enable_data()
 		
-'''
-def choose_model(model):
-	while True:
-		tag = input('Choose a model: (SVM or LR) ')
-		ok = model.recognize(tag)
-		if ok == True:
-			break
+	def choose_model(self, tag):
+		if self.models.recognize(tag):
+			self.tab_parent.tab(1, state="normal")
+			self.tab_parent.tab(2, state="disabled")
+			self.tab_parent.tab(3, state="disabled")
+			self.tab_parent.select(1)
+
+	def enable_configure(self):
+		# Set widget for tab_config
+		self.title_tab_config = tk.Label(self.tab_config, text = self.models.name())
+		args = self.models.get_arguments()
+		self.label_tab_config = []
+		self.entry_tab_config = []
+		for name in args:
+			label = tk.Label(self.tab_config, text = name)
+			entry = self.get_entry(self.tab_config, args[name])
+			self.label_tab_config.append(label)
+			self.entry_tab_config.append(entry)
+		self.button_tab_config = tk.Button(self.tab_config, text="Assign", command = self.set_configure)
 	
-def configure_model(model):
-	args = model.get_arguments()
-	values = {}
-	for arg in args:
-		val = input('%s (%s): ' %(arg[0], arg[1]))
-		values[arg[0]] = val
-	model.set_arguments(values)
+		# Add widget to tab_config
+		self.title_tab_config.grid(row=0, column=0, padx=15, pady=15, sticky='W')
+		r = 0
+		for pair in zip(self.label_tab_config, self.entry_tab_config):
+			r = r+1			
+			pair[0].grid(row=r, column=0, padx=15, pady=15, sticky='W')
+			pair[1].grid(row=r, column=1, padx=15, pady=15, sticky='W')
+		self.button_tab_config.grid(row=r+1, column=0, padx=15, pady=15)
+
+	def get_entry(self, tab, arg):
+		if arg["type"] == "float":
+			ent = tk.Entry(tab)
+			#ent.delete(0, end)
+			ent.insert(0, arg["default"])
+			return ent
+		elif arg["type"] == "string":
+			cb = ttk.Combobox(tab, values = arg["option"])
+			cb.current(0)
+			return cb
+		else:
+			return None
+
+	def set_configure(self):
+		if self.check_configure():
+			args = {}
+			for pair in zip(self.label_tab_config, self.entry_tab_config):
+				name = pair[0]
+				value = pair[1].get()
+				args[name] = value
+			self.models.set_arguments(args)
+			self.tab_parent.tab(2, state="normal")
+			self.tab_parent.select(2)
+		else:
+			messagebox.showinfo("Configure Error", "Invalid information")
+
+	def check_configure(self):
+		for entry in self.entry_tab_config:
+			if isinstance(entry, ttk.Combobox):
+				if not(entry.get() in entry["values"]):
+					return False
+			elif isinstance(entry, tk.Entry):
+				try:
+					checktype = float(entry.get())
+				except ValueError:
+					return False
+		return True
+
+	def enable_data(self):
+		pass
+'''
 
 def feed_data(model):
 	n = int(input('Enter number of datas: '))
@@ -72,9 +144,6 @@ def feed_data(model):
 		x1, x2, y = params
 		model.add_one_data((x1,x2,y))
 	model.feed_data()
-
-def control_model(model):
-	print('This work is not done')
 '''
 
 if __name__ == "__main__":
