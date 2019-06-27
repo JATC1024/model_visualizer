@@ -3,15 +3,17 @@
 # Draw output to user
 
 from functools import partial
+from data.data_sample import data_sample
 from model_manager import model_manager
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 class ui_manager:
-
 	def __init__(self):
 		# Model manager
 		self.models = model_manager()
+		self.samples = data_sample()
+		self.pad = 10
 
 		# Main form
 		self.form = tk.Tk()
@@ -40,11 +42,11 @@ class ui_manager:
 			self.button_tab_model.append(btn)
 
 		# Add Widgets to tab_model
-		self.title_tab_model.grid(row=0,column=0, padx=15, pady=15, sticky = 'W')
+		self.title_tab_model.grid(row=0,column=0, padx=self.pad, pady=self.pad, sticky = 'W')
 		r = 0
 		for btn in self.button_tab_model:
 			r = r + 1
-			btn.grid(row=r, column=0, padx=15, pady=15, sticky = 'W')
+			btn.grid(row=r, column=0, padx=self.pad, pady=self.pad, sticky = 'W')
 
 		# Disable other tabs
 		self.tab_parent.tab(1, state="disabled")
@@ -86,13 +88,13 @@ class ui_manager:
 		self.button_tab_config = tk.Button(self.tab_config, text="Assign", command = self.set_configure)
 	
 		# Add widget to tab_config
-		self.title_tab_config.grid(row=0, column=0, padx=15, pady=15, sticky='W')
+		self.title_tab_config.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky='W')
 		r = 0
 		for pair in zip(self.label_tab_config, self.entry_tab_config):
 			r = r+1			
-			pair[0].grid(row=r, column=0, padx=15, pady=15, sticky='W')
-			pair[1].grid(row=r, column=1, padx=15, pady=15, sticky='W')
-		self.button_tab_config.grid(row=r+1, column=0, padx=15, pady=15)
+			pair[0].grid(row=r, column=0, padx=self.pad, pady=self.pad, sticky='W')
+			pair[1].grid(row=r, column=1, padx=self.pad, pady=self.pad, sticky='W')
+		self.button_tab_config.grid(row=r+1, column=0, padx=self.pad, pady=self.pad)
 
 	def get_entry(self, tab, arg):
 		if arg["type"] == "float":
@@ -133,7 +135,31 @@ class ui_manager:
 		return True
 
 	def enable_data(self):
+		# Set widget for tab_data
+		self.title_left_tab_data = tk.Label(self.tab_data, text = "Resample")
+		self.preset_tab_data = []
+		presets = self.samples.list()
+		for preset in presets:
+			btn = tk.Button(self.tab_data, text = preset, command = partial(self.set_preset, preset))
+			self.preset_tab_data.append(btn)
+		self.title_right_tab_data = tk.Label(self.tab_data, text = "Choose class, then draw point")
+		self.side = 0
+		self.radio0_tab_data = tk.Radiobutton(self.tab_data, text = "Class 0", variable = self.side, value = 0, state="active")
+		self.radio1_tab_data = tk.Radiobutton(self.tab_data, text = "Class 1", variable = self.side, value = 1)
+		self.radio0_tab_data.select()
+		# Add widget to tab
+		self.title_left_tab_data.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky='W')
+		r = 0
+		for preset in self.preset_tab_data:
+			r = r+1
+			preset.grid(row=r, column=0, padx=self.pad, pady=self.pad, sticky='W')
+		self.title_right_tab_data.grid(row=0, column=1, columnspan=2, padx=self.pad, pady=self.pad, sticky='W')
+		self.radio0_tab_data.grid(row=1, column=1, padx=self.pad, pady=self.pad, sticky='W')
+		self.radio1_tab_data.grid(row=1, column=2, padx=self.pad, pady=self.pad, sticky='W')
+
+	def set_preset(self, tag):
 		pass
+		
 '''
 
 def feed_data(model):
