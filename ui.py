@@ -4,6 +4,7 @@
 
 from functools import partial
 from data.data_sample import data_sample
+from visualizer import visualizer
 from model_manager import model_manager
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
@@ -11,15 +12,17 @@ import threading, time
 
 class ui_manager:
 	def __init__(self):
-		# Model manager
+		# Manage Atributes
 		self.models = model_manager()
 		self.samples = data_sample()
 		self.pad = 10
 		self.leng = 150
+		self.visual = visualizer(self.models, (self.leng, self.leng), self.samples.rang, self.samples.rang)
 		self.color = ["blue", "orange"]
 		self.radius = 3
 		self.process = None
-		self.running = False
+		self.event = threading.Event()
+		self.stop = threading.Event()
 
 		# Main form
 		self.form = tk.Tk()
@@ -228,53 +231,47 @@ class ui_manager:
 			self.image_tab_visual.grid(row=0, column=1, rowspan=3)
 
 	def start_pressed(self):
-		if self.running:
+		if self.event.is_set():
 			self.pause_process()
 		else:
 			self.start_process()
 
 	def start_process(self):
 		if self.process is None:
-			self.event = threading.Event()
-			self.stop = threading.Event()
+			self.stop.clear()
 			self.process = threading.Thread(name='Visualize', target = self.loop_visualize)
 			self.event.set()
 			self.process.start()
 		else:
 			self.event.set()
-		self.running = True
 		self.btn_start_tab_visual.config(text = "Pause")
 		self.tab_parent.tab(0, state="disabled")
 		self.tab_parent.tab(2, state="disabled")
 
 	def pause_process(self):
-		print("Pausing...")
 		self.event.clear()
-		self.running = False
 		self.btn_start_tab_visual.config(text = "Start")
 		self.tab_parent.tab(0, state="normal")
 		self.tab_parent.tab(2, state="normal")
 
 	def reset_pressed(self):
-		pass
+		self.stop_process()
+		self.models.reset()
 
 	def loop_visualize(self):
-		print("Begin of a thread")
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
-			print("Running")
-			time.sleep(1)
-		print("End of a thread")
+			self.models.next_step()
+			bmp = self.visual.visualize()
+			self.image_tab_visual.config(image = bmp)
 
 	def stop_process(self):
 		if not(self.process is None):
-			print("Stopping")
 			self.event.set()
 			self.stop.set()
 			self.process.join()
-			print("Joined")
 			self.process = None
-			self.running = False
+			self.pause_process()
 
 	def on_closing(self):
 		self.stop_process()

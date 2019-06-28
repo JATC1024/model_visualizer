@@ -23,3 +23,6 @@ class model_manager:
 
 	def feed_data(self, data):
 		pass
+	
+	def reset(self):
+		pass
