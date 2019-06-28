@@ -4,20 +4,22 @@
 
 from functools import partial
 from data.data_sample import data_sample
-from visualizer import visualizer
-from model_manager import model_manager
+from visualizer import visualizer	# TODO: Change this
+from model_manager import model_manager	# TODO: Change this
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
-import threading, time
+import threading
 
 class ui_manager:
 	def __init__(self):
 		# Manage Atributes
-		self.models = model_manager()
+		self.store = model_manager()	#TODO: Change this
+		self.model = None
+		self.visual = None
 		self.samples = data_sample()
 		self.pad = 10
 		self.leng = 150
-		self.visual = visualizer(self.models, (self.leng, self.leng), self.samples.rang, self.samples.rang)
+		
 		self.color = ["blue", "orange"]
 		self.radius = 3
 		self.process = None
@@ -44,7 +46,7 @@ class ui_manager:
 
 		# Widgets for tab_model
 		self.title_tab_model = tk.Label(self.tab_model, text = "Choose a model")
-		model_list = self.models.list()
+		model_list = self.store.list()
 		self.button_tab_model = []
 		for md in model_list:
 			btn = tk.Button(self.tab_model, text = md, command = partial(self.choose_model, md))
@@ -80,7 +82,9 @@ class ui_manager:
 			self.enable_visual()
 		
 	def choose_model(self, tag):
-		if self.models.recognize(tag):
+		self.model = self.store.recognize(tag)
+		if not (self.model is None):
+			self.visual = visualizer(self.model, (self.leng, self.leng), self.samples.rang, self.samples.rang)
 			self.tab_parent.tab(1, state="normal")
 			self.tab_parent.tab(2, state="disabled")
 			self.tab_parent.tab(3, state="disabled")
@@ -89,8 +93,8 @@ class ui_manager:
 
 	def enable_configure(self):
 		# Set widget for tab_config
-		self.title_tab_config = tk.Label(self.tab_config, text = self.models.name())
-		args = self.models.get_arguments()
+		self.title_tab_config = tk.Label(self.tab_config, text = self.model.name())
+		args = self.model.get_arguments()
 		self.label_tab_config = []
 		self.entry_tab_config = []
 		for name in args:
@@ -129,7 +133,7 @@ class ui_manager:
 				name = pair[0]
 				value = pair[1].get()
 				args[name] = value
-			self.models.set_arguments(args)
+			self.model.set_arguments(args)
 			self.tab_parent.tab(2, state="normal")
 			self.tab_parent.select(2)
 		else:
@@ -212,7 +216,7 @@ class ui_manager:
 	
 	def submit_data(self):
 		data = self.samples.get_data()
-		self.models.feed_data(data)
+		self.model.feed_data(data)
 		self.tab_parent.tab(3, state="normal")
 		self.tab_parent.select(3)
 		self.stop_process()
@@ -256,12 +260,12 @@ class ui_manager:
 
 	def reset_pressed(self):
 		self.stop_process()
-		self.models.reset()
+		self.model.reset()
 
 	def loop_visualize(self):
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
-			self.models.next_step()
+			self.model.next_step()
 			bmp = self.visual.visualize()
 			self.image_tab_visual.config(image = bmp)
 
