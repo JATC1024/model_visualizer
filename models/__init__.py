@@ -4,3 +4,5 @@ from .Session import Session
 from .Variables import Variables
 from .Operation import Operation
 from .Placeholder import Placeholder
+from .computational_graph import *
+from .Optimizer import *

@@ -37,9 +37,53 @@ class Sigmoid(Operation):
 	def compute(self, val):
 		return 1.0 / (1.0 + np.exp(-val))
 
-class Dot(Operation):
-	def __init__(self, x, y):
-		super().__init__([x, y])
+# class Dot(Operation):
+# 	def __init__(self, x, y):
+# 		super().__init__([x, y])
 
-	def compute(self, x, y):
-		return np.sum(x * y)
+# 	def compute(self, x, y):
+# 		return np.sum(x * y)
+
+class Log(Operation):
+	def __init__(self, x):
+		super().__init__([x])
+
+	def compute(self, x):
+		return np.log(x)
+
+# class Multiply(Operation):
+# 	def __init__(self, x, y):
+# 		super().__init__([x, y])
+
+# 	def compute(self, x, y):
+# 		return x * y
+
+class ReduceSum(Operation):
+	def __init__(self, A, axis = 0):
+		super().__init__([A])
+		self.axis = axis
+
+	def compute(self, A):
+		return np.sum(A, axis = self.axis)
+
+class Negative(Operation):
+	def __init__(self, x):
+		super().__init__([x])
+
+	def compute(self, x):
+		return -x
+
+
+class Matmul(Operation):
+	def __init__(self, A, B):
+		super().__init__([A, B])
+
+	def compute(self, A, B):
+		return A.dot(B)
+
+class Transpose(Operation):
+	def __init__(self, A):
+		super().__init__([A])
+
+	def compute(self, A):
+		return A.T

@@ -16,7 +16,6 @@ class root_model:
 		self._name = 'Root Model'
 		self._params = None
 		self._data = None
-		self._graph = Graph()
 
 
 	def _initialize(self, configs):
@@ -73,9 +72,10 @@ class root_model:
 			raise Exception("An argument is not recoginized")
 
 	def feed_data(self, array):
-		""" Set the train data.
-		Each element of array is (x1, x2, y) """
-		self._data = np.array(array)
+		data = np.array(array)
+		self._X = data[0:len(data),0:-1]
+		self._y = np.array(data[0:len(data),-1])
+		self._y.reshape((len(self._y), 1))
 
 	def _check_valid_params(self, params):
 		""" Checks if the given params are valid for the model. """
