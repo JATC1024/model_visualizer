@@ -3,6 +3,11 @@
 import os
 import json
 import numpy as np
+from.computational_graph import Graph
+from .Operation import *
+from .Variables import *
+from .Placeholder import *
+from .Session import *
 
 class root_model:
 	def __init__(self):
@@ -60,21 +65,17 @@ class root_model:
 	def set_arguments(self, params):
 		""" Sets value of arguments needed for model to train.
 		Each element of array is a value """
-		if _check_valid_params(params):
+		if self._check_valid_params(params):
 			for p in params:
 				self._params[p] = params[p]
 		else:
 			raise Exception("An argument is not recoginized")
 
 	def feed_data(self, array):
-		""" Set the train data.
-		Each element of array is (x1, x2, y) """
-		self._data = np.array(array)
-
-	def print(self):
-		print(self._name)
-		print(self._params)
-		print(self.weights)
+		data = np.array(array)
+		self._X = data[0:len(data),0:-1]
+		self._y = np.array(data[0:len(data),-1])
+		self._y.reshape((len(self._y), 1))
 
 	def _check_valid_params(self, params):
 		""" Checks if the given params are valid for the model. """
@@ -96,4 +97,9 @@ class root_model:
 	def clone(self):
 		""" Creates a new instance of the model.
 		Abstract  """
+		raise Exception("Not implemented")
+
+	def inference(self, x):
+		""" Calculates the value estimated for a datapoint.
+		Implementation is passed to children classes """
 		raise Exception("Not implemented")
