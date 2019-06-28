@@ -47,9 +47,8 @@ class logistic_regression(root_model):
 
 	def inference(self, x):
 		sess = Session()
-		x = copy.deepcopy(x)
-		x.append(1)
-		return sess.run(self._infer, feed_dict = {'x' : x})
+		x = np.array(x + [1])
+		return sess.run(self._infer, feed_dict = {'X' : to_matrix(x).T})
 
 	def next_step(self):
 		X = np.hstack((self._X, np.array([[1] * len(self._X)]).T))

@@ -1,4 +1,4 @@
-from .model_prototype import *
+from .model_prototype import model_prototype
 from .computational_graph import Graph
 from .Session import Session
 from .Variables import Variables

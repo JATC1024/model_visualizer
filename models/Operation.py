@@ -37,13 +37,6 @@ class Sigmoid(Operation):
 	def compute(self, val):
 		return 1.0 / (1.0 + np.exp(-val))
 
-# class Dot(Operation):
-# 	def __init__(self, x, y):
-# 		super().__init__([x, y])
-
-# 	def compute(self, x, y):
-# 		return np.sum(x * y)
-
 class Log(Operation):
 	def __init__(self, x):
 		super().__init__([x])
