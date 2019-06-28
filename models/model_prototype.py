@@ -1,8 +1,7 @@
-from .svm import support_vector_machine
-
+from .regression import logistic_regression
 
 class model_prototype:
-	_models = [support_vector_machine()]
+	_models = [logistic_regression()]
 
 	@staticmethod
 	def create_model(tag):

@@ -1,0 +1,19 @@
+{
+	"name" : "Logistic Regression",
+	"tags":[
+		"Logistic Regression",
+		"Logistic",
+		"logistic regression",
+		"logistic"
+	],
+	"params":{
+		"learning_rate":{
+			"default":0.001,
+			"type":"float"
+		},
+		"activation":{
+			"default":"sigmoid",
+			"type":"string"
+		}
+	}
+}
