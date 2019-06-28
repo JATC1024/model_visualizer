@@ -1,9 +1,10 @@
-from root_preset import root_preset
+from data.root_preset import root_preset
+import os, json
 
 class circle_preset(root_preset):
 
 	def __init__(self):
-		root_preset.__init__()
+		root_preset.__init__(self)
 		data = self.json_data()
 		self.name = data['name']
 		self.radius = data['radius']

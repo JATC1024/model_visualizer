@@ -37,4 +37,3 @@ if __name__ == '__main__':
 	print("yy = ", yy)
 	print("y = ", y)
 	print(md.weights)
-

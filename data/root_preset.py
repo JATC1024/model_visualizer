@@ -1,11 +1,11 @@
 # A common preset
 # Other particular presets will inheritaged from this class
-import numpy
+import numpy, os, json
 
 class root_preset:
 	
 	def __init__(self):
-		data = self.json_data()
+		data = root_preset.json_data(self)
 		self.name = data['name']
 		self.noise = data['noise']
 		self.data = []
@@ -17,7 +17,7 @@ class root_preset:
 		with open(dir) as f:
 			return json.load(f)
 
-	def be_noise(self)
+	def be_noise(self):
 		return numpy.random.uniform(0,1) <= self.noise
 
 	def recognize(self, tag):
@@ -28,6 +28,7 @@ class root_preset:
 		pass
 
 	def resample(self):
+		self.data = []
 		for i in range(0, self.size):
 			x1 = numpy.random.uniform(self.rang[0], self.rang[1])
 			x2 = numpy.random.uniform(self.rang[0], self.rang[1])
@@ -38,3 +39,6 @@ class root_preset:
 
 	def get_data(self):
 		return self.data
+
+	def add_data(self, x1, x2, y):
+		self.data.append((x1,x2,y))
