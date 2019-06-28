@@ -20,3 +20,6 @@ class model_manager:
 		return { "Learning rate": { "type": "float", "default" : 0.001 } , "Activation function" : { "type": "string", "option": ["Sigmoid", "Tanh"] , "default": "Sigmoid"} }
 	def set_arguments(self, args):
 		pass
+
+	def feed_data(self, data):
+		pass

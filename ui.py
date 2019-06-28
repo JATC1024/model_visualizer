@@ -7,6 +7,7 @@ from data.data_sample import data_sample
 from model_manager import model_manager
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
+import threading, time
 
 class ui_manager:
 	def __init__(self):
@@ -17,6 +18,8 @@ class ui_manager:
 		self.leng = 150
 		self.color = ["blue", "orange"]
 		self.radius = 3
+		self.process = None
+		self.running = False
 
 		# Main form
 		self.form = tk.Tk()
@@ -58,6 +61,7 @@ class ui_manager:
 
 		# Events
 		self.tab_parent.bind("<<NotebookTabChanged>>", self.on_tab_selected)
+		self.form.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 		# Show
 		self.tab_parent.pack(expand=1, fill="both")
@@ -69,6 +73,8 @@ class ui_manager:
 			self.enable_configure()
 		elif id == 2:
 			self.enable_data()
+		elif id == 3:
+			self.enable_visual()
 		
 	def choose_model(self, tag):
 		if self.models.recognize(tag):
@@ -76,6 +82,7 @@ class ui_manager:
 			self.tab_parent.tab(2, state="disabled")
 			self.tab_parent.tab(3, state="disabled")
 			self.tab_parent.select(1)
+			self.stop_process()
 
 	def enable_configure(self):
 		# Set widget for tab_config
@@ -151,6 +158,7 @@ class ui_manager:
 		self.radio1_tab_data = tk.Radiobutton(self.tab_data, text = "Class 1", variable = self.side, value = 1)
 		self.radio0_tab_data.select()
 		self.canvas_tab_data = tk.Canvas(self.tab_data, height=self.leng, width=self.leng, bg='white')
+		self.submit_tab_data = tk.Button(self.tab_data, text="Submit", command=self.submit_data)
 		# Add widget to tab
 		self.title_left_tab_data.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky='W')
 		r = 0
@@ -161,6 +169,7 @@ class ui_manager:
 		self.radio0_tab_data.grid(row=1, column=1, padx=self.pad, pady=self.pad, sticky='W')
 		self.radio1_tab_data.grid(row=1, column=2, padx=self.pad, pady=self.pad, sticky='W')
 		self.canvas_tab_data.grid(row=2, column=1, rowspan=3, columnspan=2)
+		self.submit_tab_data.grid(row=2, column=3, padx=self.pad, pady=self.pad, sticky='W')
 		# Set event
 		self.canvas_tab_data.bind("<Button-1>", self.add_point)
 
@@ -197,18 +206,79 @@ class ui_manager:
 	def convert_to_data_1(self, x):
 		rang = self.samples.rang()
 		return x/self.leng * (rang[1]-rang[0]) + rang[0]
-		
-'''
+	
+	def submit_data(self):
+		data = self.samples.get_data()
+		self.models.feed_data(data)
+		self.tab_parent.tab(3, state="normal")
+		self.tab_parent.select(3)
+		self.stop_process()
 
-def feed_data(model):
-	n = int(input('Enter number of datas: '))
-	for i in range(0,n):
-		element = input('Enter data %d' %i)
-		params = [int(x) for x in elelement.split(' ')]
-		x1, x2, y = params
-		model.add_one_data((x1,x2,y))
-	model.feed_data()
-'''
+	def enable_visual(self):
+		if self.process is None:
+			# Set widget for tab_visual
+			self.title_tab_visual = tk.Label(self.tab_visual, text="Visualize")
+			self.btn_start_tab_visual = tk.Button(self.tab_visual, text="Start", command = self.start_pressed)
+			self.btn_reset_tab_visual = tk.Button(self.tab_visual, text="Reset", command = self.reset_pressed)
+			self.image_tab_visual = tk.Label(self.tab_visual)
+			# Add widget to tab_visual
+			self.title_tab_visual.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky = 'W')
+			self.btn_start_tab_visual.grid(row=1, column=0, padx=self.pad, pady=self.pad, sticky='W')
+			self.btn_reset_tab_visual.grid(row=2, column=0, padx=self.pad, pady=self.pad, sticky='W')
+			self.image_tab_visual.grid(row=0, column=1, rowspan=3)
+
+	def start_pressed(self):
+		if self.running:
+			self.pause_process()
+		else:
+			self.start_process()
+
+	def start_process(self):
+		if self.process is None:
+			self.event = threading.Event()
+			self.stop = threading.Event()
+			self.process = threading.Thread(name='Visualize', target = self.loop_visualize)
+			self.event.set()
+			self.process.start()
+		else:
+			self.event.set()
+		self.running = True
+		self.btn_start_tab_visual.config(text = "Pause")
+		self.tab_parent.tab(0, state="disabled")
+		self.tab_parent.tab(2, state="disabled")
+
+	def pause_process(self):
+		print("Pausing...")
+		self.event.clear()
+		self.running = False
+		self.btn_start_tab_visual.config(text = "Start")
+		self.tab_parent.tab(0, state="normal")
+		self.tab_parent.tab(2, state="normal")
+
+	def reset_pressed(self):
+		pass
+
+	def loop_visualize(self):
+		print("Begin of a thread")
+		while not(self.stop.is_set()):
+			event_is_set = self.event.wait()
+			print("Running")
+			time.sleep(1)
+		print("End of a thread")
+
+	def stop_process(self):
+		if not(self.process is None):
+			print("Stopping")
+			self.event.set()
+			self.stop.set()
+			self.process.join()
+			print("Joined")
+			self.process = None
+			self.running = False
+
+	def on_closing(self):
+		self.stop_process()
+		self.form.destroy()
 
 if __name__ == "__main__":
 	manager = ui_manager()
