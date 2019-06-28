@@ -16,4 +16,4 @@ class none_preset(root_preset):
 			return json.load(f)
 
 	def resample(self):
-		pass
+		self.data = []

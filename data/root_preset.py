@@ -28,6 +28,7 @@ class root_preset:
 		pass
 
 	def resample(self):
+		self.data = []
 		for i in range(0, self.size):
 			x1 = numpy.random.uniform(self.rang[0], self.rang[1])
 			x2 = numpy.random.uniform(self.rang[0], self.rang[1])
@@ -38,3 +39,6 @@ class root_preset:
 
 	def get_data(self):
 		return self.data
+
+	def add_data(self, x1, x2, y):
+		self.data.append((x1,x2,y))

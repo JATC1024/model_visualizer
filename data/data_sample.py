@@ -7,8 +7,11 @@ from data.none_preset import none_preset
 class data_sample:
 	
 	def __init__(self):
-		self.current = None
 		self.preset_list = [none_preset(), linear_preset(), cross_preset(), circle_preset()]
+		self.current = self.preset_list[0]
+
+	def rang(self):
+		return self.current.rang
 
 	def list(self):
 		res = []
@@ -17,7 +20,7 @@ class data_sample:
 		return res
 
 	def recognize(self, tag):
-		for preset in preset_list:
+		for preset in self.preset_list:
 			if (preset.recognize(tag)):
 				self.current = preset
 				self.resample()
@@ -29,3 +32,6 @@ class data_sample:
 
 	def get_data(self):
 		return self.current.get_data()
+
+	def add_data(self, x1, x2, y):
+		self.current.add_data(x1, x2 ,y)

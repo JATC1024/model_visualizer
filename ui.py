@@ -6,7 +6,7 @@ from functools import partial
 from data.data_sample import data_sample
 from model_manager import model_manager
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, IntVar
 
 class ui_manager:
 	def __init__(self):
@@ -14,6 +14,9 @@ class ui_manager:
 		self.models = model_manager()
 		self.samples = data_sample()
 		self.pad = 10
+		self.leng = 150
+		self.color = ["blue", "orange"]
+		self.radius = 3
 
 		# Main form
 		self.form = tk.Tk()
@@ -143,10 +146,11 @@ class ui_manager:
 			btn = tk.Button(self.tab_data, text = preset, command = partial(self.set_preset, preset))
 			self.preset_tab_data.append(btn)
 		self.title_right_tab_data = tk.Label(self.tab_data, text = "Choose class, then draw point")
-		self.side = 0
+		self.side = IntVar()
 		self.radio0_tab_data = tk.Radiobutton(self.tab_data, text = "Class 0", variable = self.side, value = 0, state="active")
 		self.radio1_tab_data = tk.Radiobutton(self.tab_data, text = "Class 1", variable = self.side, value = 1)
 		self.radio0_tab_data.select()
+		self.canvas_tab_data = tk.Canvas(self.tab_data, height=self.leng, width=self.leng, bg='white')
 		# Add widget to tab
 		self.title_left_tab_data.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky='W')
 		r = 0
@@ -156,9 +160,43 @@ class ui_manager:
 		self.title_right_tab_data.grid(row=0, column=1, columnspan=2, padx=self.pad, pady=self.pad, sticky='W')
 		self.radio0_tab_data.grid(row=1, column=1, padx=self.pad, pady=self.pad, sticky='W')
 		self.radio1_tab_data.grid(row=1, column=2, padx=self.pad, pady=self.pad, sticky='W')
+		self.canvas_tab_data.grid(row=2, column=1, rowspan=3, columnspan=2)
+		# Set event
+		self.canvas_tab_data.bind("<Button-1>", self.add_point)
 
 	def set_preset(self, tag):
-		pass
+		if self.samples.recognize(tag):
+			self.samples.resample()
+			self.reset_canvas()
+			self.show_data(self.samples.get_data())
+
+	def reset_canvas(self):
+		self.canvas_tab_data.delete("all")
+
+	def show_data(self, data):
+		for dat in data:
+			(x,y) = self.convert_to_pixel(dat[0], dat[1])
+			self.canvas_tab_data.create_oval(x-self.radius, y-self.radius, x+self.radius, y+self.radius, fill=self.color[dat[2]])
+			
+	def convert_to_pixel(self, x, y):
+		return (self.convert_to_pixel_1(x), self.convert_to_pixel_1(y))
+
+	def convert_to_pixel_1(self, x):
+		rang = self.samples.rang()
+		return (x - rang[0]) / (rang[1]-rang[0]) * self.leng
+
+	def add_point(self, event):
+		(x,y) = self.convert_to_data(event.x, event.y)
+		z = self.side.get()
+		self.samples.add_data(x,y,z)
+		self.show_data([(x,y,z)])
+
+	def convert_to_data(self, x, y):
+		return (self.convert_to_data_1(x), self.convert_to_data_1(y))
+
+	def convert_to_data_1(self, x):
+		rang = self.samples.rang()
+		return x/self.leng * (rang[1]-rang[0]) + rang[0]
 		
 '''
 
