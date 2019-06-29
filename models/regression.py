@@ -45,10 +45,12 @@ class logistic_regression(root_model):
 		self._loss = J
 		self.minimizer = GradientDescentOptimizer(learning_rate = 0.01).minimize(self._loss)
 
-	def inference(self, x):
+	def inference(self, X = None):
 		sess = Session()
-		x = np.array(x + [1])
-		return sess.run(self._infer, feed_dict = {'X' : to_matrix(x).T})
+		if X is None:
+			X = self._X
+		X = np.hstack((X, np.ones((len(X), 1))))
+		return sess.run(self._infer, feed_dict = {'X' : X})
 
 	def next_step(self):
 		X = np.hstack((self._X, np.array([[1] * len(self._X)]).T))
