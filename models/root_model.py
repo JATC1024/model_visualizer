@@ -60,7 +60,8 @@ class root_model:
 		Each argument is a pair of 'name' and 'type' """
 		config = self.load_config_file()
 		params = config['params']
-		return [(key, params[key]['type']) for key in params]
+		# return [(key, params[key]['type']) for key in params]
+		return params
 
 	def set_arguments(self, params):
 		""" Sets value of arguments needed for model to train.
@@ -69,9 +70,10 @@ class root_model:
 			for p in params:
 				self.params[p] = params[p]
 		else:
+			print(params)
 			raise Exception("An argument is not recoginized")
 
-	def feeddata(self, array):
+	def feed_data(self, array):
 		data = np.array(array)
 		self._X = data[0:len(data),0:-1]
 		self._y = np.array(data[0:len(data),-1])
@@ -80,7 +82,7 @@ class root_model:
 	def check_validparams(self, params):
 		""" Checks if the given params are valid for the model. """
 		config = self.load_config_file()
-		defaultparams = config[params]
+		defaultparams = config["params"]
 		for p in params:
 			if not(p in defaultparams):
 				return False

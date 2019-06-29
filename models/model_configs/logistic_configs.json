@@ -13,7 +13,8 @@
 		},
 		"activation":{
 			"default":"sigmoid",
-			"type":"string"
+			"type":"string",
+			"option":["logistic"]
 		}
 	}
 }

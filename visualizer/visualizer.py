@@ -2,8 +2,9 @@ import matplotlib
 from matplotlib import pyplot as plt
 import seaborn as sns
 import numpy as np
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 from PIL import Image
-
 class visualizer:
     dense = 100
 
@@ -13,24 +14,31 @@ class visualizer:
         self.xlim = xlim
         self.ylim = ylim
 
-    def visualize(self):        
+    def visualize(self):
         xx = np.linspace(self.xlim[0], self.xlim[1], visualizer.dense)
         yy = np.linspace(self.ylim[0], self.ylim[1], visualizer.dense)
         xx, yy = np.meshgrid(xx, yy)
-        
+
         X = np.array([[p[0], p[1]] for p in zip(xx.flatten(), yy.flatten())])
         zz = self.model.inference(X).reshape(xx.shape)
-        
-        # fig = plt.figure(figsize = self.figure_size)
+
+        fig = plt.figure(figsize = self.figure_size)
         # ax = plt.gca()
-        fig, ax = plt.subplots()
+        # fig = Figure(figsize = self.figure_size)
+        canvas = FigureCanvas(fig)
+        ax = fig.gca()
         ax.pcolor(xx, yy, zz, cmap = 'RdBu_r')
-        #sns.scatterplot(self.model._X[:,0], self.model._X[:,1], hue = self.model._y, ax = ax)
-        ax.legend().remove()
+        sns.scatterplot(self.model._X[:,0], self.model._X[:,1], hue = self.model._y, ax = ax)
         ax.set_xlim(self.xlim)
         ax.set_ylim(self.ylim)
-        #plt.axis('off')
-        fig.canvas.draw()
+        ax.axis('off')
+        ax.legend().remove()
+        # plt.show()
+        canvas.draw()
+        width, height = fig.get_size_inches() * fig.get_dpi()
+        image = np.fromstring(canvas.tostring_rgb(), dtype='uint8').reshape(int(height), int(width), 3)
+        return Image.fromarray(image, 'RGB')
+
         #plt.show()
 
-        return np.array(fig.canvas.renderer.buffer_rgba())
+        # return np.array(fig.canvas.renderer.buffer_rgba())

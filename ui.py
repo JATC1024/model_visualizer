@@ -130,9 +130,10 @@ class ui_manager:
 		if self.check_configure():
 			args = {}
 			for pair in zip(self.label_tab_config, self.entry_tab_config):
-				name = pair[0]
+				name = pair[0].cget("text")
 				value = pair[1].get()
 				args[name] = value
+				# print("name =", name.cget"text"), "value =", value)
 			self.model.set_arguments(args)
 			self.tab_parent.tab(2, state="normal")
 			self.tab_parent.select(2)
