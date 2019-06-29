@@ -1,11 +1,14 @@
 from .regression import logistic_regression
 
 class model_prototype:
-	_models = [logistic_regression()]
-
-	@staticmethod
-	def create_model(tag):
-		for md in model_prototype._models:
+	def __init__(self):
+		self.models = [logistic_regression()]
+	
+	def recognize(self, tag):
+		for md in self.models:
 			if md.recognize(tag):
 				return md.clone()
 		return None
+	
+	def list(self):
+		return [md.name for md in self.models]

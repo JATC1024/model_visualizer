@@ -13,23 +13,23 @@ class root_model:
 	def __init__(self):
 		""" Default constructor
 		Creates dummy attributes for the class """
-		self._name = 'Root Model'
-		self._params = None
-		self._data = None
+		self.name = 'Root Model'
+		self.params = None
+		self.data = None
 
 
-	def _initialize(self, configs):
+	def initialize(self, configs):
 		""" Initializes a model with a set of hyperparameters.
 		The set of hyperparameters is given in the configs file """
 		dir = os.path.join(os.path.dirname(__file__), configs)
 		with open(dir) as f:
 			data = json.load(f)
-			self._name = data["name"]
-			self._params = data['params']
+			self.name = data["name"]
+			self.params = data['params']
 
 	def recognize(self, tag):
 		""" Checks wheter the self model is associated with the given tag """
-		config = self._load_config_file()
+		config = self.load_config_file()
 		tags = config['tags']
 		if tag in tags:
 			return True
@@ -45,12 +45,12 @@ class root_model:
 	def reset(self):
 		""" Cancels and deletes all train data (if any)
 		Resets all the hyperparameters with default value """
-		config = self._get_config_file_name()
-		self._initialize(self, config)
+		config = self.get_config_file_name()
+		self.initialize(self, config)
 		self.data = None
 
 
-	def _get_config_file_name(self):
+	def get_config_file_name(self):
 		""" Gets the name of the config file associatied with the model.
 		Implementation is passed to child classes """
 		raise Exception("Not implemented")
@@ -58,38 +58,38 @@ class root_model:
 	def get_arguments(self):
 		""" Returns an array of arguments needed for model to train.
 		Each argument is a pair of 'name' and 'type' """
-		config = self._load_config_file()
+		config = self.load_config_file()
 		params = config['params']
 		return [(key, params[key]['type']) for key in params]
 
 	def set_arguments(self, params):
 		""" Sets value of arguments needed for model to train.
 		Each element of array is a value """
-		if self._check_valid_params(params):
+		if self.check_validparams(params):
 			for p in params:
-				self._params[p] = params[p]
+				self.params[p] = params[p]
 		else:
 			raise Exception("An argument is not recoginized")
 
-	def feed_data(self, array):
+	def feeddata(self, array):
 		data = np.array(array)
 		self._X = data[0:len(data),0:-1]
 		self._y = np.array(data[0:len(data),-1])
 		self._y.reshape((len(self._y), 1))
 
-	def _check_valid_params(self, params):
+	def check_validparams(self, params):
 		""" Checks if the given params are valid for the model. """
-		config = self._load_config_file()
-		default_params = config[params]
+		config = self.load_config_file()
+		defaultparams = config[params]
 		for p in params:
-			if not(p in default_params):
+			if not(p in defaultparams):
 				return False
 		return True
 
-	def _load_config_file(self):
+	def load_config_file(self):
 		""" Loads the config file of the model """
 		dir = os.path.join(os.path.dirname(__file__), \
-				self._get_config_file_name())
+				self.get_config_file_name())
 		with open(dir) as f:
 			data = json.load(f)
 			return data

@@ -11,29 +11,29 @@ class logistic_regression(root_model):
 		Creates dummy attributes for the class """
 		super().__init__()
 		self.weights = None
-		self._graph = Graph()
-		self._loss = None
-		self._infer = None
-		self._initialize(logistic_regression._configs)
+		self.graph = Graph()
+		self.loss = None
+		self.infer = None
+		self.initialize(logistic_regression._configs)
 
-	def _initialize(self, configs):
+	def initialize(self, configs):
 		""" Initializes the model with a given config file """
-		super()._initialize(configs)
+		super().initialize(configs)
 		self.weights = np.random.uniform(-1, 1, 3)
-		self._get_graph()
+		self.getgraph()
 
-	def _get_config_file_name(self):
+	def get_config_file_name(self):
 		return logistic_regression._configs
 
 	def clone(self):
 		return logistic_regression()
 
-	def _get_graph(self):
-		self._graph.as_default()
+	def getgraph(self):
+		self.graph.as_default()
 		w = Variables(to_matrix(self.weights))
 		X = Placeholder('X')
 		y_predict = Sigmoid(Matmul(X, w))
-		self._infer = y_predict
+		self.infer = y_predict
 
 		one = Placeholder("one")
 		y_truth = Placeholder('y')
@@ -42,22 +42,22 @@ class logistic_regression(root_model):
 		c = Add(one, Negative(y_predict))
 		second = Matmul(Transpose(b), Log(c))
 		J = Negative(Add(first, second))
-		self._loss = J
-		self.minimizer = GradientDescentOptimizer(learning_rate = 0.01).minimize(self._loss)
+		self.loss = J
+		self.minimizer = GradientDescentOptimizer(learning_rate = 0.01).minimize(self.loss)
 
 	def inference(self, X = None):
 		sess = Session()
 		if X is None:
 			X = self._X
 		X = np.hstack((X, np.ones((len(X), 1))))
-		return sess.run(self._infer, feed_dict = {'X' : X})
+		return sess.run(self.infer, feed_dict = {'X' : X})
 
 	def next_step(self):
 		X = np.hstack((self._X, np.array([[1] * len(self._X)]).T))
 		sess = Session()
 		one = np.ones((len(self._y), 1))
 		feed = {'X' : X, 'one' : one, 'y' : to_matrix(self._y)}
-		sess.run(self._loss, feed)
+		sess.run(self.loss, feed)
 		sess.run(self.minimizer, feed)
 
 def to_matrix(A):
