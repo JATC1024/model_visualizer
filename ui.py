@@ -5,7 +5,7 @@
 from functools import partial
 from data.data_sample import data_sample
 from visualizer import visualizer	# TODO: Change this
-from model_manager import model_manager	# TODO: Change this
+from models.model_prototype import model_prototype	# TODO: Change this
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
 import threading
@@ -13,7 +13,7 @@ import threading
 class ui_manager:
 	def __init__(self):
 		# Manage Atributes
-		self.store = model_manager()	#TODO: Change this
+		self.store = model_prototype()	#TODO: Change this
 		self.model = None
 		self.visual = None
 		self.samples = data_sample()
@@ -93,7 +93,7 @@ class ui_manager:
 
 	def enable_configure(self):
 		# Set widget for tab_config
-		self.title_tab_config = tk.Label(self.tab_config, text = self.model.name())
+		self.title_tab_config = tk.Label(self.tab_config, text = self.model.name)
 		args = self.model.get_arguments()
 		self.label_tab_config = []
 		self.entry_tab_config = []
