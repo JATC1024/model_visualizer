@@ -19,7 +19,7 @@ class ui_manager:
 		self.samples = data_sample()
 		self.pad = 10
 		self.leng = 150
-		
+
 		self.color = ["blue", "orange"]
 		self.radius = 3
 		self.process = None
@@ -30,7 +30,7 @@ class ui_manager:
 		self.form = tk.Tk()
 		self.form.title("Model visualizer")
 		self.form.geometry("500x280")
-		
+
 		# Create tabs
 		self.tab_parent = ttk.Notebook(self.form)
 		self.tab_model = ttk.Frame(self.tab_parent)
@@ -80,11 +80,11 @@ class ui_manager:
 			self.enable_data()
 		elif id == 3:
 			self.enable_visual()
-		
+
 	def choose_model(self, tag):
 		self.model = self.store.recognize(tag)
 		if not (self.model is None):
-			self.visual = visualizer(self.model, (self.leng, self.leng), self.samples.rang, self.samples.rang)
+			self.visual = visualizer(self.model, (self.leng, self.leng), self.samples.rang(), self.samples.rang())
 			self.tab_parent.tab(1, state="normal")
 			self.tab_parent.tab(2, state="disabled")
 			self.tab_parent.tab(3, state="disabled")
@@ -103,12 +103,12 @@ class ui_manager:
 			self.label_tab_config.append(label)
 			self.entry_tab_config.append(entry)
 		self.button_tab_config = tk.Button(self.tab_config, text="Assign", command = self.set_configure)
-	
+
 		# Add widget to tab_config
 		self.title_tab_config.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky='W')
 		r = 0
 		for pair in zip(self.label_tab_config, self.entry_tab_config):
-			r = r+1			
+			r = r+1
 			pair[0].grid(row=r, column=0, padx=self.pad, pady=self.pad, sticky='W')
 			pair[1].grid(row=r, column=1, padx=self.pad, pady=self.pad, sticky='W')
 		self.button_tab_config.grid(row=r+1, column=0, padx=self.pad, pady=self.pad)
@@ -194,7 +194,7 @@ class ui_manager:
 		for dat in data:
 			(x,y) = self.convert_to_pixel(dat[0], dat[1])
 			self.canvas_tab_data.create_oval(x-self.radius, y-self.radius, x+self.radius, y+self.radius, fill=self.color[dat[2]])
-			
+
 	def convert_to_pixel(self, x, y):
 		return (self.convert_to_pixel_1(x), self.convert_to_pixel_1(y))
 
@@ -214,7 +214,7 @@ class ui_manager:
 	def convert_to_data_1(self, x):
 		rang = self.samples.rang()
 		return x/self.leng * (rang[1]-rang[0]) + rang[0]
-	
+
 	def submit_data(self):
 		data = self.samples.get_data()
 		self.model.feed_data(data)
