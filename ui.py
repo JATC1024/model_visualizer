@@ -16,13 +16,13 @@ class ui_manager:
 		# Manage Atributes
 		self.store = model_prototype()
 		self.model = None
-		self.visual = None
 		self.samples = data_sample()
 		self.pad = 10
 		self.leng = 150
 
 		self.color = ["blue", "orange"]
 		self.radius = 3
+		self.unit = 2
 		self.process = None
 		self.event = threading.Event()
 		self.stop = threading.Event()
@@ -85,7 +85,6 @@ class ui_manager:
 	def choose_model(self, tag):
 		self.model = self.store.recognize(tag)
 		if not (self.model is None):
-			self.visual = visualizer(self.model, (self.leng, self.leng), self.samples.rang(), self.samples.rang())
 			self.tab_parent.tab(1, state="normal")
 			self.tab_parent.tab(2, state="disabled")
 			self.tab_parent.tab(3, state="disabled")
@@ -186,15 +185,15 @@ class ui_manager:
 		if self.samples.recognize(tag):
 			self.samples.resample()
 			self.reset_canvas()
-			self.show_data(self.samples.get_data())
+			self.show_data(self.canvas_tab_data, self.samples.get_data())
 
 	def reset_canvas(self):
 		self.canvas_tab_data.delete("all")
 
-	def show_data(self, data):
+	def show_data(self, canvas, data):
 		for dat in data:
 			(x,y) = self.convert_to_pixel(dat[0], dat[1])
-			self.canvas_tab_data.create_oval(x-self.radius, y-self.radius, x+self.radius, y+self.radius, fill=self.color[dat[2]])
+			canvas.create_oval(x-self.radius, y-self.radius, x+self.radius, y+self.radius, fill=self.color[dat[2]])
 
 	def convert_to_pixel(self, x, y):
 		return (self.convert_to_pixel_1(x), self.convert_to_pixel_1(y))
@@ -207,7 +206,7 @@ class ui_manager:
 		(x,y) = self.convert_to_data(event.x, event.y)
 		z = self.side.get()
 		self.samples.add_data(x,y,z)
-		self.show_data([(x,y,z)])
+		self.show_data(event.widget, [(x,y,z)])
 
 	def convert_to_data(self, x, y):
 		return (self.convert_to_data_1(x), self.convert_to_data_1(y))
@@ -232,12 +231,31 @@ class ui_manager:
 			self.title_tab_visual = tk.Label(self.tab_visual, text="Visualize")
 			self.btn_start_tab_visual = tk.Button(self.tab_visual, text="Start", command = self.start_pressed)
 			self.btn_reset_tab_visual = tk.Button(self.tab_visual, text="Reset", command = self.reset_pressed)
-			self.image_tab_visual = tk.Label(self.tab_visual)
+			self.canvas_tab_visual = tk.Canvas(self.tab_visual, height=self.leng, width=self.leng, bg='white')
 			# Add widget to tab_visual
 			self.title_tab_visual.grid(row=0, column=0, padx=self.pad, pady=self.pad, sticky = 'W')
 			self.btn_start_tab_visual.grid(row=1, column=0, padx=self.pad, pady=self.pad, sticky='W')
 			self.btn_reset_tab_visual.grid(row=2, column=0, padx=self.pad, pady=self.pad, sticky='W')
-			self.image_tab_visual.grid(row=0, column=1, rowspan=3)
+			self.canvas_tab_visual.grid(row=0, column=1, rowspan=3)
+			# Draw canvas
+			self.cells_tab_visual = []
+			x = 0
+			while x < self.leng:
+				y = 0
+				while y < self.leng:
+					(xx, yy) = self.convert_to_data(x,y)
+					cell = self.canvas_tab_visual.create_rectangle(x, y, x+self.unit, y+self.unit, outline="")
+					self.cells_tab_visual.append((cell, xx, yy))
+					y = y + self.unit
+				x = x + self.unit
+
+			data = []
+			for p in zip(self.model._X[:,0], self.model._X[:,1], self.model._y):
+				x = float(p[0])
+				y = float(p[1])
+				z = int(p[2])
+				data.append((x,y,z))
+			self.show_data(self.canvas_tab_visual, data)
 
 	def start_pressed(self):
 		if self.event.is_set():
@@ -270,11 +288,14 @@ class ui_manager:
 	def loop_visualize(self):
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
-			# print("Am doing shit")
-			# time.sleep(1)
 			self.model.next_step()
-			bmp = ImageTk.PhotoImage(self.visual.visualize())
+			bmp = ImageTk.PhotoImage(self.visualize())
 			self.image_tab_visual.config(image = bmp)
+
+	def visualize(self):
+		for cell in self.cells_tab_visual:
+			val = self.model.inference((cell[1], cell[2]))
+			self.canvas_tab_visual.itemconfig(cell[0], 
 
 	def stop_process(self):
 		if not(self.process is None):
