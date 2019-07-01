@@ -299,7 +299,7 @@ class ui_manager:
 		for cell in self.cells_tab_visual:
 			#print((cell[1], cell[2]))
 			val = self.model.inference([[cell[1], cell[2]]])[0][0]
-			#self.canvas_tab_visual.itemconfig(cell[0], fill = clr.to_hex(Blues(val)))
+			self.canvas_tab_visual.itemconfig(cell[0], fill = clr.to_hex(Blues(val)))
 
 	def stop_process(self):
 		if not(self.process is None):
