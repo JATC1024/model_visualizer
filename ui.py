@@ -4,16 +4,17 @@
 
 from functools import partial
 from data.data_sample import data_sample
-from visualizer import visualizer	# TODO: Change this
-from models.model_prototype import model_prototype	# TODO: Change this
+from visualizer import visualizer	
+from models.model_prototype import model_prototype	
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
+from PIL import Image, ImageTk
 import threading
 
 class ui_manager:
 	def __init__(self):
 		# Manage Atributes
-		self.store = model_prototype()	#TODO: Change this
+		self.store = model_prototype()
 		self.model = None
 		self.visual = None
 		self.samples = data_sample()
@@ -267,7 +268,7 @@ class ui_manager:
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
 			self.model.next_step()
-			bmp = self.visual.visualize()
+			bmp = ImageTk.PhotoImage(self.visual.visualize())
 			self.image_tab_visual.config(image = bmp)
 
 	def stop_process(self):
