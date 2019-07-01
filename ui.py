@@ -273,8 +273,9 @@ class ui_manager:
 			# print("Am doing shit")
 			# time.sleep(1)
 			self.model.next_step()
-			bmp = ImageTk.PhotoImage(self.visual.visualize())
-			self.image_tab_visual.config(image = bmp)
+			img = self.visual.visualize()
+			tkimg = ImageTk.PhotoImage(img)
+			#self.image_tab_visual.config(image = tkimg)
 
 	def stop_process(self):
 		if not(self.process is None):
