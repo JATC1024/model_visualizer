@@ -9,7 +9,7 @@ from models.model_prototype import model_prototype
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
 from PIL import Image, ImageTk
-import threading
+import threading, time
 
 class ui_manager:
 	def __init__(self):
@@ -218,10 +218,13 @@ class ui_manager:
 
 	def submit_data(self):
 		data = self.samples.get_data()
-		self.model.feed_data(data)
-		self.tab_parent.tab(3, state="normal")
-		self.tab_parent.select(3)
-		self.stop_process()
+		if data == []:
+			messagebox.showinfo("Data Error", "Data must not be empty")
+		else:
+			self.model.feed_data(data)
+			self.tab_parent.tab(3, state="normal")
+			self.tab_parent.select(3)
+			self.stop_process()
 
 	def enable_visual(self):
 		if self.process is None:
@@ -267,14 +270,16 @@ class ui_manager:
 	def loop_visualize(self):
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
+			# print("Am doing shit")
+			# time.sleep(1)
 			self.model.next_step()
 			bmp = ImageTk.PhotoImage(self.visual.visualize())
 			self.image_tab_visual.config(image = bmp)
 
 	def stop_process(self):
 		if not(self.process is None):
-			self.event.set()
 			self.stop.set()
+			self.event.set()			
 			self.process.join()
 			self.process = None
 			self.pause_process()
