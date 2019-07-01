@@ -275,7 +275,7 @@ class ui_manager:
 			self.model.next_step()
 			img = self.visual.visualize()
 			tkimg = ImageTk.PhotoImage(img)
-			#self.image_tab_visual.config(image = tkimg)
+			self.image_tab_visual.config(image = tkimg)
 
 	def stop_process(self):
 		if not(self.process is None):
