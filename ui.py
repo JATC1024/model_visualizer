@@ -4,12 +4,14 @@
 
 from functools import partial
 from data.data_sample import data_sample
-from visualizer import visualizer	
 from models.model_prototype import model_prototype	
 import tkinter as tk
 from tkinter import ttk, messagebox, IntVar
 from PIL import Image, ImageTk
 import threading, time
+import matplotlib.pyplot as plt
+import matplotlib.colors as clr
+from threading import Timer
 
 class ui_manager:
 	def __init__(self):
@@ -26,6 +28,7 @@ class ui_manager:
 		self.process = None
 		self.event = threading.Event()
 		self.stop = threading.Event()
+		self.closeApp = False
 
 		# Main form
 		self.form = tk.Tk()
@@ -289,25 +292,28 @@ class ui_manager:
 		while not(self.stop.is_set()):
 			event_is_set = self.event.wait()
 			self.model.next_step()
-			bmp = ImageTk.PhotoImage(self.visualize())
-			self.image_tab_visual.config(image = bmp)
+			self.visualize()
 
 	def visualize(self):
+		Blues = plt.get_cmap('Blues')
 		for cell in self.cells_tab_visual:
-			val = self.model.inference((cell[1], cell[2]))
-			self.canvas_tab_visual.itemconfig(cell[0], 
+			#print((cell[1], cell[2]))
+			val = self.model.inference([[cell[1], cell[2]]])[0][0]
+			#self.canvas_tab_visual.itemconfig(cell[0], fill = clr.to_hex(Blues(val)))
 
 	def stop_process(self):
 		if not(self.process is None):
 			self.stop.set()
-			self.event.set()			
+			self.event.set()
 			self.process.join()
-			self.process = None
 			self.pause_process()
+			self.process = None
+		if self.closeApp:
+			self.form.destroy()				
 
 	def on_closing(self):
+		self.closeApp = True
 		self.stop_process()
-		self.form.destroy()
 
 if __name__ == "__main__":
 	manager = ui_manager()
